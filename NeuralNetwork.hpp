@@ -20,6 +20,7 @@ class NeuralNetork
     void calculateErrors(RowVector& output);
     void updateWeights();
     void trainNN(vecotR<RowVector*> data);
-    vector<RowVector*> neuronLayers;
 
-}
+    vector<RowVector*> neuronLayers;
+    vector<
+}vector<
