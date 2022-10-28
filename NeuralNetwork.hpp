@@ -22,5 +22,10 @@ class NeuralNetork
     void trainNN(vecotR<RowVector*> data);
 
     vector<RowVector*> neuronLayers;
-    vector<
+    vector<RowVector*> cacheLayers;
+    vector<RowVector*> deltas;
+    vector<Matrix*> weights;
+
+    Scalar learningRate;
+
 }vector<
