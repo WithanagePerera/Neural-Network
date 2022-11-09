@@ -8,13 +8,16 @@ import csv
 from random import randint
 from sklearn.utils import shuffle
 from sklearn.preprocessing import MinMaxScaler
+from sklearn.model_selection import train_test_split
 from tensorflow import keras
-from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import *
+from tensorflow.keras.models import Sequential, Model
 from tensorflow.keras.layers import Activation, Dense
-from tensorflow.keras.optimizers import Adam
+from tensorflow.keras.optimizers import Adam, RMSprop
 from tensorflow.keras.metrics import categorical_crossentropy
 from sklearn.metrics import confusion_matrix
 
+# Inputs
 age = []
 sex = []
 chest_pain_type = []
@@ -22,49 +25,123 @@ resting_blood_pressure = []
 serium_cholestoral = []
 fasting_blood_sugar = []
 resting_ECG = []
-maximum_hear_rate = []
+maximum_heart_rate = []
 exercise_induced_angina = []
 oldpeak = []
 peak_exercise_slope = []
 major_vessels = []
 thal = []
 
+# Labels
+labels = []
+
 with open('heart.csv', 'r') as csv_file:
     csv_reader = csv.reader(csv_file)
+    next(csv_reader)
 
     for line in csv_reader:
-        age.append(line[0])
+        {
+            age.append(line[0]),
+            sex.append(line[1]),
+            chest_pain_type.append(line[2]),
+            resting_blood_pressure.append(line[3]),
+            serium_cholestoral.append(line[4]),
+            fasting_blood_sugar.append(line[5]),
+            resting_ECG.append(line[6]),
+            maximum_heart_rate.append(line[7]),
+            exercise_induced_angina.append(line[8]),
+            oldpeak.append(line[9]),
+            peak_exercise_slope.append(line[10]),
+            major_vessels.append(line[11]),
+            thal.append(line[12]),
+            labels.append(line[13])
+        }
 
-for i in age:
-    print(i)
+age = np.array(age)
+sex = np.array(sex)
+chest_pain_type = np.array(chest_pain_type)
+resting_blood_pressure = np.array(resting_blood_pressure)
+serium_cholestoral = np.array(serium_cholestoral)
+fasting_blood_sugar = np.array(fasting_blood_sugar)
+resting_ECG = np.array(resting_ECG)
+maximum_heart_rate = np.array(maximum_heart_rate)
+exercise_induced_angina = np.array(exercise_induced_angina)
+oldpeak = np.array(oldpeak)
+peak_exercise_slope = np.array(peak_exercise_slope)
+major_vessels = np.array(major_vessels)
+thal = np.array(thal)
 
-# train_labels = []
-# train_samples = []
+labels = np.array(labels)
 
-# for i in range(50):
-#     random_younger = randint(13, 64)
-#     train_samples.append(random_younger)
-#     train_labels.append(1)
+scaler = MinMaxScaler(feature_range=(0, 1))
 
-#     random_older = randint(65, 100)
-#     train_samples.append(random_older)
-#     train_labels.append(0)
+age = scaler.fit_transform(age.reshape(-1, 1))
+sex = scaler.fit_transform(sex.reshape(-1, 1))
+chest_pain_type = scaler.fit_transform(chest_pain_type.reshape(-1, 1))
+resting_blood_pressure = scaler.fit_transform(resting_blood_pressure.reshape(-1, 1))
+serium_cholestoral = scaler.fit_transform(serium_cholestoral.reshape(-1, 1))
+fasting_blood_sugar = scaler.fit_transform(fasting_blood_sugar.reshape(-1, 1))
+resting_ECG = scaler.fit_transform(resting_ECG.reshape(-1, 1))
+maximum_heart_rate = scaler.fit_transform(maximum_heart_rate.reshape(-1, 1))
+exercise_induced_angina = scaler.fit_transform(exercise_induced_angina.reshape(-1, 1))
+oldpeak = scaler.fit_transform(oldpeak.reshape(-1, 1))
+peak_exercise_slope = scaler.fit_transform(peak_exercise_slope.reshape(-1, 1))
+major_vessels = scaler.fit_transform(major_vessels.reshape(-1, 1))
+thal = scaler.fit_transform(thal.reshape(-1, 1))
 
-# for i in range(1000):
-#     random_younger = randint(13, 64)
-#     train_samples.append(random_younger)
-#     train_labels.append(0)
+age_train, age_test, sex_train, sex_test, chest_pain_type_train, chest_pain_type_test, resting_blood_pressure_train, resting_blood_pressure_test, serium_cholestoral_train, serium_cholestoral_test, fasting_blood_sugar_train, fasting_blood_sugar_test, resting_ECG_train, resting_ECG_test, maximum_heart_rate_train, maximum_heart_rate_test, exercise_induced_angina_train, exercise_induced_angina_test, oldpeak_train, oldpeak_test, peak_exercise_slope_train, peak_exercise_slope_test, major_vessels_train, major_vessels_test, thal_train, thal_test,labels_train, labels_test = train_test_split(
+    age, 
+    sex, 
+    chest_pain_type,
+    resting_blood_pressure,
+    serium_cholestoral,
+    fasting_blood_sugar,
+    resting_ECG,
+    maximum_heart_rate,
+    exercise_induced_angina,
+    oldpeak,
+    peak_exercise_slope,
+    major_vessels,
+    thal,
+    labels,
+    test_size = 0.2, random_state = 1)
 
-#     random_older = randint(65, 100)
-#     train_samples.append(random_older)
-#     train_labels.append(1)
+print (age_train.size)
+age_train = keras.Input(shape = (820, ))
+sex_train = keras.Input(shape = (820, ))
 
-# train_labels = np.array(train_labels)
-# train_samples = np.array(train_samples)
-# train_labels, train_samples = shuffle(train_labels, train_samples)
+input = Concatenate()([age_train, sex_train])
+x = Dense(2)(input)
+x = Dense(1)(x)
 
-# scaler = MinMaxScaler(feature_range=(0, 1))
-# scaled_train_samples = scaler.fit_transform((train_samples.reshape(-1, 1)))
+model = Model(inputs = [age_train, sex_train], outputs = x)
+model.summary()
+
+model.compile(
+    optimizer = Adam(learning_rate=0.0001), 
+    loss = 'sparse_categorical_crossentropy', 
+    metrics = ['accuracy']
+    )
+
+model.fit(
+    x = [age_test, sex_test], 
+    y = labels_test, 
+    validation_split = 0.1)
+# merged = keras.layers.Concatenate(axis = 1)([age_train, sex_train])
+# dense1 = keras.layers.Dense(2, input_dim = 2, activation = keras.activations.sigmoid, use_bias = True)(merged)
+# output = keras.layers.Dense(1, activation =keras.activations.relu, use_bias = True)(dense1)
+# model = keras.models.Model(inputs = [age_train, sex_train], output = output)
+
+# model.fit([age_test, sex_test], output, batch_size = 16, epochs = 30)
+
+
+# model = Sequential(
+#     [
+#         Dense(units = 16, input_shape = (1,), activiation = 'relu'),
+#         Dense(units = 32, activation = 'relu'),
+#         DEnse(units = 2, activation = 'softmax')
+#     ]
+# )
 
 # model = Sequential(
 #     [
@@ -95,23 +172,7 @@ for i in age:
 # test_labels = []
 # test_samples = []
 
-# for i in range(50):
-#     random_younger = randint(13, 64)
-#     test_samples.append(random_younger)
-#     test_labels.append(1)
 
-#     random_older = randint(65, 100)
-#     test_samples.append(random_older)
-#     test_labels.append(0)
-
-# for i in range(200):
-#     random_younger = randint(13, 64)
-#     test_samples.append(random_younger)
-#     test_labels.append(0)
-
-#     random_older = randint(65, 100)
-#     test_samples.append(random_older)
-#     test_labels.append(1)
 
 # test_labels = np.array(train_labels)
 # test_samples = np.array(train_samples)
