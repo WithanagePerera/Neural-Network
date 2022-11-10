@@ -4,6 +4,7 @@ import tensorflow as tensorflow
 import itertools
 import matplotlib.pyplot as plt
 import csv
+import random
 
 from random import randint
 from sklearn.utils import shuffle
@@ -16,6 +17,17 @@ from tensorflow.keras.layers import Activation, Dense
 from tensorflow.keras.optimizers import Adam, RMSprop
 from tensorflow.keras.metrics import categorical_crossentropy
 from sklearn.metrics import confusion_matrix
+
+data = []
+
+with open('heart.csv', 'r') as csv_file:
+    csv_reader = csv.reader(csv_file)
+    next(csv_reader)
+
+    for line in csv_reader:
+        {
+            data.append((line[0], line[1], line[2], line[3], line[4], line[5], line[6], line[7], line[8], line[9], line[10], line[11], line[12], line[13]))
+        }
 
 # Inputs
 age = []
@@ -35,27 +47,23 @@ thal = []
 # Labels
 labels = []
 
-with open('heart.csv', 'r') as csv_file:
-    csv_reader = csv.reader(csv_file)
-    next(csv_reader)
+np.random.shuffle(data)
+for i in data:
+    age.append(i[0])
+    sex.append(i[1]),
+    chest_pain_type.append(i[2]),
+    resting_blood_pressure.append(i[3]),
+    serium_cholestoral.append(i[4]),
+    fasting_blood_sugar.append(i[5]),
+    resting_ECG.append(i[6]),
+    maximum_heart_rate.append(i[7]),
+    exercise_induced_angina.append(i[8]),
+    oldpeak.append(i[9]),
+    peak_exercise_slope.append(i[10]),
+    major_vessels.append(i[11]),
+    thal.append(i[12]),
+    labels.append(i[13])
 
-    for line in csv_reader:
-        {
-            age.append(line[0]),
-            sex.append(line[1]),
-            chest_pain_type.append(line[2]),
-            resting_blood_pressure.append(line[3]),
-            serium_cholestoral.append(line[4]),
-            fasting_blood_sugar.append(line[5]),
-            resting_ECG.append(line[6]),
-            maximum_heart_rate.append(line[7]),
-            exercise_induced_angina.append(line[8]),
-            oldpeak.append(line[9]),
-            peak_exercise_slope.append(line[10]),
-            major_vessels.append(line[11]),
-            thal.append(line[12]),
-            labels.append(line[13])
-        }
 
 age = np.array(age)
 sex = np.array(sex)
@@ -70,9 +78,6 @@ oldpeak = np.array(oldpeak)
 peak_exercise_slope = np.array(peak_exercise_slope)
 major_vessels = np.array(major_vessels)
 thal = np.array(thal)
-
-
-
 labels = np.array(labels)
 
 scaler = MinMaxScaler(feature_range=(0, 1))
@@ -108,7 +113,7 @@ age_train, age_test, sex_train, sex_test, chest_pain_type_train, chest_pain_type
     major_vessels,
     thal,
     labels,
-    test_size = 0.2, random_state = 1)
+    test_size = 0.2, random_state = 1, shuffle = True)
 
 input1 = Input(shape = (1,))
 input2 = Input(shape = (1,))
@@ -152,49 +157,49 @@ scores = model.evaluate([age_test, sex_test, chest_pain_type_test, resting_blood
                     labels_test, 
                     verbose = 2)
 
-print("Test Loss:", scores[0])
+print("\nTest Loss:", scores[0])
 print("Test Accuracy:", scores[1])
-# print(model.summary())
+print(model.summary())
 
 # # matplotlib inline
 
 
 cm = confusion_matrix(y_true = test_labels, y_pred = rounded_predictions)
 
-def plot_confusion_matrix(
-    cm, 
-    classes, 
-    normalize = False, 
-    title = 'Confusion matrix', 
-    cmap = plt.cm.Blues):
-    """
-    This function prints and plots the confusion matrix.
-    Normalization can be applied by setting 'normalize=True'.
-    """
+# def plot_confusion_matrix(
+#     cm, 
+#     classes, 
+#     normalize = False, 
+#     title = 'Confusion matrix', 
+#     cmap = plt.cm.Blues):
+#     """
+#     This function prints and plots the confusion matrix.
+#     Normalization can be applied by setting 'normalize=True'.
+#     """
 
-    plt.imshow(cm, interpolation='nearest', cmap = cmap)
-    plt.title(title)
-    plt.colorbar()
-    tick_marks = np.arange(len(classes))
-    plt.xticks(tick_marks, classes, rotation = 45)
-    plt.yticks(tick_marks, classes)
+#     plt.imshow(cm, interpolation='nearest', cmap = cmap)
+#     plt.title(title)
+#     plt.colorbar()
+#     tick_marks = np.arange(len(classes))
+#     plt.xticks(tick_marks, classes, rotation = 45)
+#     plt.yticks(tick_marks, classes)
 
-    if normalize:
-        cm = cm.astype('float')/cm.sum(axis = 1)[:, np.newaxis]
-    else:
-        print("Confusion matrix, without normalization")
+#     if normalize:
+#         cm = cm.astype('float')/cm.sum(axis = 1)[:, np.newaxis]
+#     else:
+#         print("Confusion matrix, without normalization")
 
-    print(cm)
+#     print(cm)
 
-    thresh = cm.max()/2.
-    for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
-        plt.text(j, i, cm[i, j],
-            horizontalalignment = "center",
-            color = "white" if cm[i, j] > thresh else "black")
+#     thresh = cm.max()/2.
+#     for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
+#         plt.text(j, i, cm[i, j],
+#             horizontalalignment = "center",
+#             color = "white" if cm[i, j] > thresh else "black")
 
-plt.tight_layout()
-plt.ylabel('True label')
-plt.xlabel('Predicted label')
+# plt.tight_layout()
+# plt.ylabel('True label')
+# plt.xlabel('Predicted label')
 
-cm_plot_labels = ['no_side_effects', 'had_side_effects']
-plot_confusion_matrix(cm = cm, classes = cm_plot_labels, title = "Confusion Matrix")
+# cm_plot_labels = ['no_side_effects', 'had_side_effects']
+# plot_confusion_matrix(cm = cm, classes = cm_plot_labels, title = "Confusion Matrix")
