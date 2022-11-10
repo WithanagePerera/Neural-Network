@@ -89,6 +89,7 @@ peak_exercise_slope = scaler.fit_transform(peak_exercise_slope.reshape(-1, 1))
 major_vessels = scaler.fit_transform(major_vessels.reshape(-1, 1))
 thal = scaler.fit_transform(thal.reshape(-1, 1))
 
+
 age_train, age_test, sex_train, sex_test, chest_pain_type_train, chest_pain_type_test, resting_blood_pressure_train, resting_blood_pressure_test, serium_cholestoral_train, serium_cholestoral_test, fasting_blood_sugar_train, fasting_blood_sugar_test, resting_ECG_train, resting_ECG_test, maximum_heart_rate_train, maximum_heart_rate_test, exercise_induced_angina_train, exercise_induced_angina_test, oldpeak_train, oldpeak_test, peak_exercise_slope_train, peak_exercise_slope_test, major_vessels_train, major_vessels_test, thal_train, thal_test,labels_train, labels_test = train_test_split(
     age, 
     sex, 
@@ -106,16 +107,36 @@ age_train, age_test, sex_train, sex_test, chest_pain_type_train, chest_pain_type
     labels,
     test_size = 0.2, random_state = 1)
 
-print (age_train.size)
-age_train = keras.Input(shape = (820, ))
-sex_train = keras.Input(shape = (820, ))
+# age_train = keras.Input(shape = (820, ))
+# sex_train = keras.Input(shape = (820, ))
 
-input = Concatenate()([age_train, sex_train])
-x = Dense(2)(input)
-x = Dense(1)(x)
+# input = Concatenate()([age_train, sex_train])
+# x = Dense(2)(input)
+# x = Dense(1)(x)
 
-model = Model(inputs = [age_train, sex_train], outputs = x)
-model.summary()
+# model = Model(inputs = [age_train, sex_train], outputs = x)
+# model.summary()
+
+# model.compile(
+#     optimizer = Adam(learning_rate=0.0001), 
+#     loss = 'sparse_categorical_crossentropy', 
+#     metrics = ['accuracy']
+#     )
+
+# model.fit(
+#     x = [age_test, sex_test], 
+#     y = labels_test, 
+#     validation_split = 0.1)
+
+
+
+model = Sequential(
+    [
+        Dense(units = 16, input_shape=(1,), activation = 'relu'),
+        Dense(units = 32, activation = 'relu'),
+        Dense(units = 2, activation = 'softmax')
+    ]
+)
 
 model.compile(
     optimizer = Adam(learning_rate=0.0001), 
@@ -123,10 +144,31 @@ model.compile(
     metrics = ['accuracy']
     )
 
-model.fit(
-    x = [age_test, sex_test], 
-    y = labels_test, 
-    validation_split = 0.1)
+
+# flatten = keras.layers.Flatten()
+# dense1 = keras.layers.Dense(128, activation = 'relu')
+# dense2 = keras.layers.Dense(256)
+# dense3 = keras.layers.Dense(2)
+
+# x = flatten(inputs)
+# x = dense1(x)
+# x = dense2(x)
+# x = dense3(x)
+# outputs = dense3(x)
+
+for i in age_train:
+    print(i)
+# model.fit(
+#     x = age_train,
+#     y = labels_train, 
+#     validation_split = 0.1, 
+#     batch_size = 10, 
+#     epochs = 30, 
+#     shuffle = True, 
+#     verbose = 2
+#     )
+
+# print(model.summary())
 # merged = keras.layers.Concatenate(axis = 1)([age_train, sex_train])
 # dense1 = keras.layers.Dense(2, input_dim = 2, activation = keras.activations.sigmoid, use_bias = True)(merged)
 # output = keras.layers.Dense(1, activation =keras.activations.relu, use_bias = True)(dense1)
