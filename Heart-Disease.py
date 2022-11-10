@@ -112,7 +112,18 @@ age_train, age_test, sex_train, sex_test, chest_pain_type_train, chest_pain_type
 
 input1 = Input(shape = (1,))
 input2 = Input(shape = (1,))
-inputs = Concatenate()([input1, input2])
+input3 = Input(shape = (1,))
+input4 = Input(shape = (1,))
+input5 = Input(shape = (1,))
+input6 = Input(shape = (1,))
+input7 = Input(shape = (1,))
+input8 = Input(shape = (1,))
+input9 = Input(shape = (1,))
+input10 = Input(shape = (1,))
+input11 = Input(shape = (1,))
+input12 = Input(shape = (1,))
+input13 = Input(shape = (1,))
+inputs = Concatenate()([input1, input2, input3, input4, input5, input6, input7, input8, input9, input10, input11, input12, input13])
 
 dense1 = keras.layers.Dense(512, activation = 'relu')
 dense2 = keras.layers.Dense(256, activation = 'relu')
@@ -121,7 +132,7 @@ dense3 = keras.layers.Dense(2, activation = 'softmax')
 x = dense1(inputs)
 x = dense2(x)
 outputs = dense3(x)
-model = keras.Model(inputs = inputs, outputs = outputs)
+model = keras.Model(inputs = [input1, input2, input3, input4, input5, input6, input7, input8, input9, input10, input11, input12, input13], outputs = outputs)
 
 model.compile(
     loss = keras.losses.SparseCategoricalCrossentropy(from_logits=False),
@@ -130,8 +141,8 @@ model.compile(
 )
 
 
-history = model.fit([age_train, sex_train], labels_train, batch_size= 32, epochs = 30, verbose = 2, validation_split = 0.2)
-scores = model.evaluate([age_test, sex_test], labels_test, verbose = 2)
+history = model.fit([age_train, sex_train, chest_pain_type_train, resting_blood_pressure_train, serium_cholestoral_train, fasting_blood_sugar_train, resting_ECG_train, maximum_heart_rate_train, exercise_induced_angina_train, oldpeak_train, peak_exercise_slope_train, major_vessels_train, thal_train], labels_train, batch_size= 32, epochs = 30, verbose = 2, validation_split = 0.2)
+scores = model.evaluate([age_test, sex_test, chest_pain_type_test, resting_blood_pressure_test, serium_cholestoral_test, fasting_blood_sugar_test, resting_ECG_test, maximum_heart_rate_test, exercise_induced_angina_test, oldpeak_test, peak_exercise_slope_test, major_vessels_test, thal_test], labels_test, verbose = 2)
 print("Test Loss:", scores[0])
 print("Test Accuracy:", scores[1])
 print(model.summary())
