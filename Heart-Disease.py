@@ -110,22 +110,34 @@ age_train, age_test, sex_train, sex_test, chest_pain_type_train, chest_pain_type
     labels,
     test_size = 0.2, random_state = 1)
 
-inputs = keras.Input(shape = (820, ))
-flatten = keras.layers.Flatten()
-dense1 = keras.layers.Dense(128, activation = 'relu')
-dense2 = keras.layers.Dense(256, activation = 'relu')
-dense3 = keras.layers.Dense(2)
+input1 = Input(shape = (1,))
+input2 = Input(shape = (1,))
+inputs = Concatenate()([input1, input2])
 
-x = flatten(inputs)
-x = dense1(x)
+dense1 = keras.layers.Dense(512, activation = 'relu')
+dense2 = keras.layers.Dense(256, activation = 'relu')
+dense3 = keras.layers.Dense(2, activation = 'softmax')
+
+x = dense1(inputs)
 x = dense2(x)
 outputs = dense3(x)
+model = keras.Model(inputs = inputs, outputs = outputs)
 
-model = keras.Model(inputs = inputs, outputs = outputs, name = 'functional-model')
+model.compile(
+    loss = keras.losses.SparseCategoricalCrossentropy(from_logits=False),
+    optimizer = keras.optimizers.Adam(lr = 0.001),
+    metrics = ["accuracy"],
+)
 
 
-model.fit(inputs = [age_train], out)
+history = model.fit([age_train, sex_train], labels_train, batch_size= 32, epochs = 30, verbose = 2, validation_split = 0.2)
+scores = model.evaluate([age_test, sex_test], labels_test, verbose = 2)
+print("Test Loss:", scores[0])
+print("Test Accuracy:", scores[1])
 print(model.summary())
+
+# model = keras.Model(inputs = inputs, outputs = outputs, name = 'functional-model')
+
 # age_train = keras.Input(shape = (820, ))
 # sex_train = keras.Input(shape = (820, ))
 
