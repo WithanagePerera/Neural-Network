@@ -110,6 +110,22 @@ age_train, age_test, sex_train, sex_test, chest_pain_type_train, chest_pain_type
     labels,
     test_size = 0.2, random_state = 1)
 
+inputs = keras.Input(shape = (820, ))
+flatten = keras.layers.Flatten()
+dense1 = keras.layers.Dense(128, activation = 'relu')
+dense2 = keras.layers.Dense(256, activation = 'relu')
+dense3 = keras.layers.Dense(2)
+
+x = flatten(inputs)
+x = dense1(x)
+x = dense2(x)
+outputs = dense3(x)
+
+model = keras.Model(inputs = inputs, outputs = outputs, name = 'functional-model')
+
+
+model.fit(inputs = [age_train], out)
+print(model.summary())
 # age_train = keras.Input(shape = (820, ))
 # sex_train = keras.Input(shape = (820, ))
 
@@ -134,32 +150,11 @@ age_train, age_test, sex_train, sex_test, chest_pain_type_train, chest_pain_type
 
 
 
-inputs = keras.Input(shape = (1))
-x = keras.layers.Dense(512, activation = 'relu')(inputs)
-x = keras.layers.Dense(256, activation = 'relu')(x)
-outputs = keras.layers.Dense(2, activation = 'softmax')(x)
-model = keras.Model(inputs = inputs, outputs = outputs)
-
-model.compile(
-    optimizer = Adam(learning_rate=0.0001), 
-    loss = 'sparse_categorical_crossentropy', 
-    metrics = ['accuracy']
-    )
-
-model.fit(age, labels, batch_size=32, epochs = 10, verbose = 2)
-model.evaluate(age_test, labels_test, batch_size = 32, verbose = 2)
-print(model.summary())
-
-
-
-
-# model = Sequential(
-#     [
-#         Dense(units = 16, input_shape=(1,), activation = 'relu'),
-#         Dense(units = 32, activation = 'relu'),
-#         Dense(units = 2, activation = 'softmax')
-#     ]
-# )
+# inputs = keras.Input(shape = (1))
+# x = keras.layers.Dense(512, activation = 'relu')(inputs)
+# x = keras.layers.Dense(256, activation = 'relu')(x)
+# outputs = keras.layers.Dense(2, activation = 'softmax')(x)
+# model = keras.Model(inputs = inputs, outputs = outputs)
 
 # model.compile(
 #     optimizer = Adam(learning_rate=0.0001), 
@@ -167,16 +162,9 @@ print(model.summary())
 #     metrics = ['accuracy']
 #     )
 
-# model.fit(
-#     x = age_train,
-#     y = labels_train, 
-#     validation_split = 0.1, 
-#     batch_size = 10, 
-#     epochs = 30, 
-#     shuffle = True, 
-#     verbose = 2
-#     )
 
+# model.fit(x = age_train, y = labels_train, batch_size=32, epochs = 50, verbose = 2)
+# model.evaluate(age_test, labels_test, batch_size = 32, verbose = 2)
 # print(model.summary())
 
 
@@ -200,60 +188,8 @@ print(model.summary())
 # model.fit([age_test, sex_test], output, batch_size = 16, epochs = 30)
 
 
-# model = Sequential(
-#     [
-#         Dense(units = 16, input_shape = (1,), activiation = 'relu'),
-#         Dense(units = 32, activation = 'relu'),
-#         DEnse(units = 2, activation = 'softmax')
-#     ]
-# )
-
-# model = Sequential(
-#     [
-#         Dense(units = 16, input_shape=(1,), activation = 'relu'),
-#         Dense(units = 32, activation = 'relu'),
-#         Dense(units = 2, activation = 'softmax')
-#     ]
-# )
-
-# model.compile(
-#     optimizer = Adam(learning_rate=0.0001), 
-#     loss = 'sparse_categorical_crossentropy', 
-#     metrics = ['accuracy']
-#     )
-
-# model.fit(
-#     x = scaled_train_samples, 
-#     y = train_labels, 
-#     validation_split = 0.1, 
-#     batch_size = 10, 
-#     epochs = 15, 
-#     shuffle = True, 
-#     verbose = 2
-#     )
 
 
-# # Test Set
-# test_labels = []
-# test_samples = []
-
-
-
-# test_labels = np.array(train_labels)
-# test_samples = np.array(train_samples)
-# test_labels, test_samples = shuffle(train_labels, train_samples)
-
-# scaled_test_samples = scaler.fit_transform(test_samples.reshape(-1,1))
-
-# predictions = model.predict(x=scaled_test_samples, batch_size = 10, verbose = 0)
-
-# rounded_predictions = np.argmax(predictions, axis = -1)
-
-# # for i in rounded_predictions:
-# #     if (i == 1):
-# #         print("True")
-# #     else:
-# #         print("False")
 
 # # matplotlib inline
 
