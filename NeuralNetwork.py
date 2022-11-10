@@ -62,6 +62,9 @@ model.fit(
     verbose = 2
     )
 
+
+for i in scaled_train_samples:
+    print(i.dtype)
 # print(model.summary())
 
 # # Test Set

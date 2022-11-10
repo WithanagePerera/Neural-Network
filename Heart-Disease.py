@@ -71,6 +71,8 @@ peak_exercise_slope = np.array(peak_exercise_slope)
 major_vessels = np.array(major_vessels)
 thal = np.array(thal)
 
+
+
 labels = np.array(labels)
 
 scaler = MinMaxScaler(feature_range=(0, 1))
@@ -89,8 +91,9 @@ peak_exercise_slope = scaler.fit_transform(peak_exercise_slope.reshape(-1, 1))
 major_vessels = scaler.fit_transform(major_vessels.reshape(-1, 1))
 thal = scaler.fit_transform(thal.reshape(-1, 1))
 
+labels = scaler.fit_transform(labels.reshape(-1, 1))
 
-age_train, age_test, sex_train, sex_test, chest_pain_type_train, chest_pain_type_test, resting_blood_pressure_train, resting_blood_pressure_test, serium_cholestoral_train, serium_cholestoral_test, fasting_blood_sugar_train, fasting_blood_sugar_test, resting_ECG_train, resting_ECG_test, maximum_heart_rate_train, maximum_heart_rate_test, exercise_induced_angina_train, exercise_induced_angina_test, oldpeak_train, oldpeak_test, peak_exercise_slope_train, peak_exercise_slope_test, major_vessels_train, major_vessels_test, thal_train, thal_test,labels_train, labels_test = train_test_split(
+age_train, age_test, sex_train, sex_test, chest_pain_type_train, chest_pain_type_test, resting_blood_pressure_train, resting_blood_pressure_test, serium_cholestoral_train, serium_cholestoral_test, fasting_blood_sugar_train, fasting_blood_sugar_test, resting_ECG_train, resting_ECG_test, maximum_heart_rate_train, maximum_heart_rate_test, exercise_induced_angina_train, exercise_induced_angina_test, oldpeak_train, oldpeak_test, peak_exercise_slope_train, peak_exercise_slope_test, major_vessels_train, major_vessels_test, thal_train, thal_test, labels_train, labels_test = train_test_split(
     age, 
     sex, 
     chest_pain_type,
@@ -128,18 +131,14 @@ age_train, age_test, sex_train, sex_test, chest_pain_type_train, chest_pain_type
 #     y = labels_test, 
 #     validation_split = 0.1)
 
-age_train = np.array(age_train)
 
-for i in age_train:
-    print(i)
 
-model = Sequential(
-    [
-        Dense(units = 16, input_shape=(1,), activation = 'relu'),
-        Dense(units = 32, activation = 'relu'),
-        Dense(units = 2, activation = 'softmax')
-    ]
-)
+
+inputs = keras.Input(shape = (1))
+x = keras.layers.Dense(512, activation = 'relu')(inputs)
+x = keras.layers.Dense(256, activation = 'relu')(x)
+outputs = keras.layers.Dense(2, activation = 'softmax')(x)
+model = keras.Model(inputs = inputs, outputs = outputs)
 
 model.compile(
     optimizer = Adam(learning_rate=0.0001), 
@@ -147,15 +146,36 @@ model.compile(
     metrics = ['accuracy']
     )
 
-model.fit(
-    x = age_train,
-    y = labels_train, 
-    validation_split = 0.1, 
-    batch_size = 10, 
-    epochs = 30, 
-    shuffle = True, 
-    verbose = 2
-    )
+model.fit(age, labels, batch_size=32, epochs = 10, verbose = 2)
+model.evaluate(age_test, labels_test, batch_size = 32, verbose = 2)
+print(model.summary())
+
+
+
+
+# model = Sequential(
+#     [
+#         Dense(units = 16, input_shape=(1,), activation = 'relu'),
+#         Dense(units = 32, activation = 'relu'),
+#         Dense(units = 2, activation = 'softmax')
+#     ]
+# )
+
+# model.compile(
+#     optimizer = Adam(learning_rate=0.0001), 
+#     loss = 'sparse_categorical_crossentropy', 
+#     metrics = ['accuracy']
+#     )
+
+# model.fit(
+#     x = age_train,
+#     y = labels_train, 
+#     validation_split = 0.1, 
+#     batch_size = 10, 
+#     epochs = 30, 
+#     shuffle = True, 
+#     verbose = 2
+#     )
 
 # print(model.summary())
 
