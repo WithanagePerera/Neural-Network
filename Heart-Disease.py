@@ -128,7 +128,10 @@ age_train, age_test, sex_train, sex_test, chest_pain_type_train, chest_pain_type
 #     y = labels_test, 
 #     validation_split = 0.1)
 
+age_train = np.array(age_train)
 
+for i in age_train:
+    print(i)
 
 model = Sequential(
     [
@@ -144,6 +147,18 @@ model.compile(
     metrics = ['accuracy']
     )
 
+model.fit(
+    x = age_train,
+    y = labels_train, 
+    validation_split = 0.1, 
+    batch_size = 10, 
+    epochs = 30, 
+    shuffle = True, 
+    verbose = 2
+    )
+
+# print(model.summary())
+
 
 # flatten = keras.layers.Flatten()
 # dense1 = keras.layers.Dense(128, activation = 'relu')
@@ -156,19 +171,7 @@ model.compile(
 # x = dense3(x)
 # outputs = dense3(x)
 
-for i in age_train:
-    print(i)
-# model.fit(
-#     x = age_train,
-#     y = labels_train, 
-#     validation_split = 0.1, 
-#     batch_size = 10, 
-#     epochs = 30, 
-#     shuffle = True, 
-#     verbose = 2
-#     )
 
-# print(model.summary())
 # merged = keras.layers.Concatenate(axis = 1)([age_train, sex_train])
 # dense1 = keras.layers.Dense(2, input_dim = 2, activation = keras.activations.sigmoid, use_bias = True)(merged)
 # output = keras.layers.Dense(1, activation =keras.activations.relu, use_bias = True)(dense1)
