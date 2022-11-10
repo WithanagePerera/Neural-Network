@@ -141,121 +141,60 @@ model.compile(
 )
 
 
-history = model.fit([age_train, sex_train, chest_pain_type_train, resting_blood_pressure_train, serium_cholestoral_train, fasting_blood_sugar_train, resting_ECG_train, maximum_heart_rate_train, exercise_induced_angina_train, oldpeak_train, peak_exercise_slope_train, major_vessels_train, thal_train], labels_train, batch_size= 32, epochs = 30, verbose = 2, validation_split = 0.2)
-scores = model.evaluate([age_test, sex_test, chest_pain_type_test, resting_blood_pressure_test, serium_cholestoral_test, fasting_blood_sugar_test, resting_ECG_test, maximum_heart_rate_test, exercise_induced_angina_test, oldpeak_test, peak_exercise_slope_test, major_vessels_test, thal_test], labels_test, verbose = 2)
+history = model.fit([age_train, sex_train, chest_pain_type_train, resting_blood_pressure_train, serium_cholestoral_train, fasting_blood_sugar_train, resting_ECG_train, maximum_heart_rate_train, exercise_induced_angina_train, oldpeak_train, peak_exercise_slope_train, major_vessels_train, thal_train], 
+                    labels_train, 
+                    batch_size= 41, 
+                    epochs = 50, 
+                    verbose = 2, 
+                    shuffle=True)
+
+scores = model.evaluate([age_test, sex_test, chest_pain_type_test, resting_blood_pressure_test, serium_cholestoral_test, fasting_blood_sugar_test, resting_ECG_test, maximum_heart_rate_test, exercise_induced_angina_test, oldpeak_test, peak_exercise_slope_test, major_vessels_test, thal_test], 
+                    labels_test, 
+                    verbose = 2)
+
 print("Test Loss:", scores[0])
 print("Test Accuracy:", scores[1])
-print(model.summary())
-
-# model = keras.Model(inputs = inputs, outputs = outputs, name = 'functional-model')
-
-# age_train = keras.Input(shape = (820, ))
-# sex_train = keras.Input(shape = (820, ))
-
-# input = Concatenate()([age_train, sex_train])
-# x = Dense(2)(input)
-# x = Dense(1)(x)
-
-# model = Model(inputs = [age_train, sex_train], outputs = x)
-# model.summary()
-
-# model.compile(
-#     optimizer = Adam(learning_rate=0.0001), 
-#     loss = 'sparse_categorical_crossentropy', 
-#     metrics = ['accuracy']
-#     )
-
-# model.fit(
-#     x = [age_test, sex_test], 
-#     y = labels_test, 
-#     validation_split = 0.1)
-
-
-
-
-# inputs = keras.Input(shape = (1))
-# x = keras.layers.Dense(512, activation = 'relu')(inputs)
-# x = keras.layers.Dense(256, activation = 'relu')(x)
-# outputs = keras.layers.Dense(2, activation = 'softmax')(x)
-# model = keras.Model(inputs = inputs, outputs = outputs)
-
-# model.compile(
-#     optimizer = Adam(learning_rate=0.0001), 
-#     loss = 'sparse_categorical_crossentropy', 
-#     metrics = ['accuracy']
-#     )
-
-
-# model.fit(x = age_train, y = labels_train, batch_size=32, epochs = 50, verbose = 2)
-# model.evaluate(age_test, labels_test, batch_size = 32, verbose = 2)
 # print(model.summary())
-
-
-# flatten = keras.layers.Flatten()
-# dense1 = keras.layers.Dense(128, activation = 'relu')
-# dense2 = keras.layers.Dense(256)
-# dense3 = keras.layers.Dense(2)
-
-# x = flatten(inputs)
-# x = dense1(x)
-# x = dense2(x)
-# x = dense3(x)
-# outputs = dense3(x)
-
-
-# merged = keras.layers.Concatenate(axis = 1)([age_train, sex_train])
-# dense1 = keras.layers.Dense(2, input_dim = 2, activation = keras.activations.sigmoid, use_bias = True)(merged)
-# output = keras.layers.Dense(1, activation =keras.activations.relu, use_bias = True)(dense1)
-# model = keras.models.Model(inputs = [age_train, sex_train], output = output)
-
-# model.fit([age_test, sex_test], output, batch_size = 16, epochs = 30)
-
-
-
-
 
 # # matplotlib inline
 
 
-# cm = confusion_matrix(y_true = test_labels, y_pred = rounded_predictions)
+cm = confusion_matrix(y_true = test_labels, y_pred = rounded_predictions)
 
-# def plot_confusion_matrix(
-#     cm, 
-#     classes, 
-#     normalize = False, 
-#     title = 'Confusion matrix', 
-#     cmap = plt.cm.Blues):
-#     """
-#     This function prints and plots the confusion matrix.
-#     Normalization can be applied by setting 'normalize=True'.
-#     """
+def plot_confusion_matrix(
+    cm, 
+    classes, 
+    normalize = False, 
+    title = 'Confusion matrix', 
+    cmap = plt.cm.Blues):
+    """
+    This function prints and plots the confusion matrix.
+    Normalization can be applied by setting 'normalize=True'.
+    """
 
-#     plt.imshow(cm, interpolation='nearest', cmap = cmap)
-#     plt.title(title)
-#     plt.colorbar()
-#     tick_marks = np.arange(len(classes))
-#     plt.xticks(tick_marks, classes, rotation = 45)
-#     plt.yticks(tick_marks, classes)
+    plt.imshow(cm, interpolation='nearest', cmap = cmap)
+    plt.title(title)
+    plt.colorbar()
+    tick_marks = np.arange(len(classes))
+    plt.xticks(tick_marks, classes, rotation = 45)
+    plt.yticks(tick_marks, classes)
 
-#     if normalize:
-#         cm = cm.astype('float')/cm.sum(axis = 1)[:, np.newaxis]
-#     else:
-#         print("Confusion matrix, without normalization")
+    if normalize:
+        cm = cm.astype('float')/cm.sum(axis = 1)[:, np.newaxis]
+    else:
+        print("Confusion matrix, without normalization")
 
-#     print(cm)
+    print(cm)
 
-#     thresh = cm.max()/2.
-#     for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
-#         plt.text(j, i, cm[i, j],
-#             horizontalalignment = "center",
-#             color = "white" if cm[i, j] > thresh else "black")
+    thresh = cm.max()/2.
+    for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
+        plt.text(j, i, cm[i, j],
+            horizontalalignment = "center",
+            color = "white" if cm[i, j] > thresh else "black")
 
-# plt.tight_layout()
-# plt.ylabel('True label')
-# plt.xlabel('Predicted label')
+plt.tight_layout()
+plt.ylabel('True label')
+plt.xlabel('Predicted label')
 
-# cm_plot_labels = ['no_side_effects', 'had_side_effects']
-# plot_confusion_matrix(cm = cm, classes = cm_plot_labels, title = "Confusion Matrix")
-
-# import os.path
-# model.save('medical_trial_model.h5')
+cm_plot_labels = ['no_side_effects', 'had_side_effects']
+plot_confusion_matrix(cm = cm, classes = cm_plot_labels, title = "Confusion Matrix")
