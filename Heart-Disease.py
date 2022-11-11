@@ -17,6 +17,11 @@ from tensorflow.keras.layers import Activation, Dense
 from tensorflow.keras.optimizers import Adam, RMSprop
 from tensorflow.keras.metrics import categorical_crossentropy
 from sklearn.metrics import confusion_matrix
+from IPython.display import SVG
+from keras.utils.vis_utils import model_to_dot
+from keras.applications import *
+from google.colab import files
+from keras.utils import plot_model
 
 data = []
 
@@ -130,8 +135,8 @@ input12 = Input(shape = (1,))
 input13 = Input(shape = (1,))
 inputs = Concatenate()([input1, input2, input3, input4, input5, input6, input7, input8, input9, input10, input11, input12, input13])
 
-dense1 = keras.layers.Dense(512, activation = 'relu')
-dense2 = keras.layers.Dense(256, activation = 'relu')
+dense1 = keras.layers.Dense(128, activation = 'relu')
+dense2 = keras.layers.Dense(64, activation = 'relu')
 dense3 = keras.layers.Dense(2, activation = 'softmax')
 
 x = dense1(inputs)
@@ -161,45 +166,57 @@ print("\nTest Loss:", scores[0])
 print("Test Accuracy:", scores[1])
 print(model.summary())
 
+print(labels_test.size)
+
 # # matplotlib inline
+predictions = model.predict(x = [age_test, sex_test, chest_pain_type_test, resting_blood_pressure_test, serium_cholestoral_test, fasting_blood_sugar_test, resting_ECG_test, maximum_heart_rate_test, exercise_induced_angina_test, oldpeak_test, peak_exercise_slope_test, major_vessels_test, thal_test], 
+              batch_size = 41, 
+              verbose = 0)
+rounded_predictions = np.argmax(predictions, axis = -1)
 
+cm = confusion_matrix(y_true = labels_test, y_pred = rounded_predictions)
 
-cm = confusion_matrix(y_true = test_labels, y_pred = rounded_predictions)
+def plot_confusion_matrix(
+    cm, 
+    classes, 
+    normalize = False, 
+    title = 'Confusion matrix', 
+    cmap = plt.cm.Blues):
+    """
+    This function prints and plots the confusion matrix.
+    Normalization can be applied by setting 'normalize=True'.
+    """
 
-# def plot_confusion_matrix(
-#     cm, 
-#     classes, 
-#     normalize = False, 
-#     title = 'Confusion matrix', 
-#     cmap = plt.cm.Blues):
-#     """
-#     This function prints and plots the confusion matrix.
-#     Normalization can be applied by setting 'normalize=True'.
-#     """
+    plt.imshow(cm, interpolation='nearest', cmap = cmap)
+    plt.title(title)
+    plt.colorbar()
+    tick_marks = np.arange(len(classes))
+    plt.xticks(tick_marks, classes, rotation = 45)
+    plt.yticks(tick_marks, classes)
 
-#     plt.imshow(cm, interpolation='nearest', cmap = cmap)
-#     plt.title(title)
-#     plt.colorbar()
-#     tick_marks = np.arange(len(classes))
-#     plt.xticks(tick_marks, classes, rotation = 45)
-#     plt.yticks(tick_marks, classes)
+    if normalize:
+        cm = cm.astype('float')/cm.sum(axis = 1)[:, np.newaxis]
+    else:
+        print("Confusion matrix, without normalization")
 
-#     if normalize:
-#         cm = cm.astype('float')/cm.sum(axis = 1)[:, np.newaxis]
-#     else:
-#         print("Confusion matrix, without normalization")
+    print(cm)
 
-#     print(cm)
+    thresh = cm.max()/2.
+    for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
+        plt.text(j, i, cm[i, j],
+            horizontalalignment = "center",
+            color = "white" if cm[i, j] > thresh else "black")
 
-#     thresh = cm.max()/2.
-#     for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
-#         plt.text(j, i, cm[i, j],
-#             horizontalalignment = "center",
-#             color = "white" if cm[i, j] > thresh else "black")
+plt.tight_layout()
+plt.ylabel('True label')
+plt.xlabel('Predicted label')
 
-# plt.tight_layout()
-# plt.ylabel('True label')
-# plt.xlabel('Predicted label')
+cm_plot_labels = ['No Heart Disease', 'Has Heart Disease']
+plot_confusion_matrix(cm = cm, classes = cm_plot_labels, title = "Confusion Matrix")
 
-# cm_plot_labels = ['no_side_effects', 'had_side_effects']
-# plot_confusion_matrix(cm = cm, classes = cm_plot_labels, title = "Confusion Matrix")
+# SVG(model_to_dot(model, show_shapes = True, show_layer_names = True, dpi = 65).create(prog = 'dot', format = 'svg'))
+
+model = ResNet50(weights = None)
+
+SVG(model_to_dot(model, show_shapes= True, show_layer_names=True, dpi=65).create(prog='dot', format='svg'))
+plot_model(model, to_file='model.png')
